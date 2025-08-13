@@ -1,0 +1,147 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+// Book class - encapsulates book details
+class Book {
+    private String title;
+    private String author;
+    private String isbn;
+    private int copies;
+
+    public Book(String title, String author, String isbn, int copies) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.copies = copies;
+    }
+
+    // Getters (Read access)
+    public String getTitle() { return title; }
+    public String getAuthor() { return author; }
+    public String getIsbn() { return isbn; }
+    public int getCopies() { return copies; }
+
+    // Setters (Write access with validation)
+    public void setTitle(String title) {
+        if (title != null && !title.isEmpty()) {
+            this.title = title;
+        }
+    }
+
+    public void setCopies(int copies) {
+        if (copies >= 0) {
+            this.copies = copies;
+        }
+    }
+
+    // Method to issue a book
+    public boolean issueBook() {
+        if (copies > 0) {
+            copies--;
+            return true;
+        }
+        return false;
+    }
+
+    // Method to return a book
+    public void returnBook() {
+        copies++;
+    }
+}
+
+// Library class - manages book collection
+class Library {
+    private ArrayList<Book> books = new ArrayList<>();
+
+    public void addBook(Book book) {
+        books.add(book);
+    }
+
+    public Book searchBook(String isbn) {
+        for (Book b : books) {
+            if (b.getIsbn().equalsIgnoreCase(isbn)) {
+                return b;
+            }
+        }
+        return null;
+    }
+
+    public void displayBooks() {
+        for (Book b : books) {
+            System.out.println("Title: " + b.getTitle() +
+                    ", Author: " + b.getAuthor() +
+                    ", ISBN: " + b.getIsbn() +
+                    ", Copies: " + b.getCopies());
+        }
+    }
+}
+
+// Main class
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Library library = new Library();
+
+        while (true) {
+            System.out.println("\n--- Library Menu ---");
+            System.out.println("1. Add Book");
+            System.out.println("2. Display Books");
+            System.out.println("3. Issue Book");
+            System.out.println("4. Return Book");
+            System.out.println("5. Exit");
+            System.out.print("Choose: ");
+            int choice = sc.nextInt();
+            sc.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter title: ");
+                    String title = sc.nextLine();
+                    System.out.print("Enter author: ");
+                    String author = sc.nextLine();
+                    System.out.print("Enter ISBN: ");
+                    String isbn = sc.nextLine();
+                    System.out.print("Enter copies: ");
+                    int copies = sc.nextInt();
+                    sc.nextLine();
+                    library.addBook(new Book(title, author, isbn, copies));
+                    System.out.println("Book added successfully!");
+                    break;
+
+                case 2:
+                    library.displayBooks();
+                    break;
+
+                case 3:
+                    System.out.print("Enter ISBN to issue: ");
+                    isbn = sc.nextLine();
+                    Book b = library.searchBook(isbn);
+                    if (b != null && b.issueBook()) {
+                        System.out.println("Book issued!");
+                    } else {
+                        System.out.println("Book not available!");
+                    }
+                    break;
+
+                case 4:
+                    System.out.print("Enter ISBN to return: ");
+                    isbn = sc.nextLine();
+                    b = library.searchBook(isbn);
+                    if (b != null) {
+                        b.returnBook();
+                        System.out.println("Book returned!");
+                    } else {
+                        System.out.println("Invalid ISBN!");
+                    }
+                    break;
+
+                case 5:
+                    System.out.println("Exiting...");
+                    return;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        }
+    }
+}
